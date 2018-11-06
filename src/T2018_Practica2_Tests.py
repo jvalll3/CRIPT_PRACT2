@@ -3,7 +3,7 @@
 
 import unittest
 
-from T2018_Practica2_Skeleton import *
+from src.T2018_Practica2_Skeleton import *
 
 
 class TestGenKey(unittest.TestCase):

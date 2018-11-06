@@ -26,13 +26,26 @@ def uoc_lfsr_sequence(polynomial, initial_state, output_bits):
     result = None
 
     # --- IMPLEMENTATION GOES HERE ---
+    result = []
+    l = len(polynomial)
 
-
+    for i in range(output_bits):
+        start = initial_state[0]
+        # go around the polynomial
+        for j in range(l):
+            # do the xor operation if it is not the first position and there is a xor door
+            if(polynomial[j] == 1 and j != 0):
+                start = start ^ initial_state[j]
+        # append the first element of inital_state to the result
+        result.append(initial_state[0])
+        #rotate the initial_state list and pushing in the new value
+        for z in range(l-1):
+            initial_state[z] = initial_state[z+1]
+        initial_state[len(initial_state)-1] = start
 
     # --------------------------------
 
     return result
-
 
 def uoc_ext_a5_pseudo_random_gen(params_pol_0, params_pol_1, params_pol_2, clocking_bits, output_bits):
     """
