@@ -8,7 +8,13 @@ MODE_DECIPHER = 1
 
 # --- IMPLEMENTATION GOES HERE ---------------------------------------------
 #  Student helpers (functions, constants, etc.) can be defined here, if needed
+import binascii
 
+def stringToBinary(str):
+    result = ''
+    for ch in str:
+        result = "{}{}".format(result, bin(ord(ch))[2:].zfill(8))
+    return result
 
 
 # --------------------------------------------------------------------------
@@ -140,10 +146,30 @@ def uoc_a5_cipher(initial_state_0, initial_state_1, initial_state_2, message, mo
 
     # --- IMPLEMENTATION GOES HERE ---
 
+    params_pol_0 = [[1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], initial_state_0]
+    params_pol_1 = [[1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], initial_state_1]
+    params_pol_2 = [[1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0], initial_state_2]
 
+    if mode == MODE_CIPHER:
+
+        binary = stringToBinary(message)
+        l = len(binary)
+
+        sequence = uoc_ext_a5_pseudo_random_gen(params_pol_0, params_pol_1, params_pol_2, [8, 10, 10], l)
+
+        for i in range(len(binary)):
+            output = "{}{}".format(output, (int(binary[i]) ^ sequence[i]))
+
+    if mode == MODE_DECIPHER:
+        l = len(message)
+
+        sequence = uoc_ext_a5_pseudo_random_gen(params_pol_0, params_pol_1, params_pol_2, [8, 10, 10], l)
+        for i in range(len(message)):
+            output = "{}{}".format(output, (int(message[i]) ^ sequence[i]))
+
+        output = binascii.unhexlify('%x' % int(output,2)).decode("utf-8")
 
     # --------------------------------
-
     return output
 
 
