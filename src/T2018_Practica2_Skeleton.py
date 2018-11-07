@@ -65,6 +65,58 @@ def uoc_ext_a5_pseudo_random_gen(params_pol_0, params_pol_1, params_pol_2, clock
 
     # --- IMPLEMENTATION GOES HERE ---
 
+    l0 = len(params_pol_0[0])
+    l1 = len(params_pol_1[0])
+    l2 = len(params_pol_2[0])
+
+    if clocking_bits[0] > l0 or clocking_bits[1] > l1 or clocking_bits[2] > l2:
+        raise ValueError("Clocking bits are not correct")
+
+    for i in range(output_bits):
+        start0 = params_pol_0[1][0]
+        start1 = params_pol_1[1][0]
+        start2 = params_pol_2[1][0]
+        # go around the polynomial
+        for j in range(l0):
+            # do the xor operation if it is not the first position and there is a xor door
+            if(params_pol_0[0][j] == 1 and j != 0):
+                start0 = start0 ^ params_pol_0[1][j]
+
+        for j in range(l1):
+            # do the xor operation if it is not the first position and there is a xor door
+            if(params_pol_1[0][j] == 1 and j != 0):
+                start1 = start1 ^ params_pol_1[1][j]
+
+        for j in range(l2):
+            # do the xor operation if it is not the first position and there is a xor door
+            if(params_pol_2[0][j] == 1 and j != 0):
+                start2 = start2 ^ params_pol_2[1][j]
+
+        sequence.append((params_pol_0[1][0] ^ params_pol_1[1][0]) ^ params_pol_2[1][0])
+
+        n1 = 0
+        if (params_pol_0[1][l0-clocking_bits[0]-1] == 1):
+            n1 += 1
+        if (params_pol_1[1][l1-clocking_bits[1]-1] == 1):
+            n1 += 1
+        if (params_pol_2[1][l2-clocking_bits[2]-1] == 1):
+            n1 += 1
+        winner = int(n1 > 1)
+
+        if(params_pol_0[1][l0-clocking_bits[0]-1] == winner):
+            for z in range(l0-1):
+                params_pol_0[1][z] = params_pol_0[1][z+1]
+            params_pol_0[1][len(params_pol_0[1])-1] = start0
+
+        if (params_pol_1[1][l1 - clocking_bits[1]-1] == winner):
+            for z in range(l1-1):
+                params_pol_1[1][z] = params_pol_1[1][z+1]
+            params_pol_1[1][len(params_pol_1[1])-1] = start1
+
+        if (params_pol_2[1][l2 - clocking_bits[2]-1] == winner):
+            for z in range(l2-1):
+                params_pol_2[1][z] = params_pol_2[1][z+1]
+            params_pol_2[1][len(params_pol_2[1])-1] = start2
 
 
     # --------------------------------
